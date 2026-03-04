@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body>
+    <div id="app">
+        <h1>{{ message }}</h1>
+        <button @click="changeMessage">點我改變訊息</button>
+    </div>
+
+    <script>
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    message: "Hello Vue!"
+                };
+            },
+            methods: {
+                changeMessage() {
+                    this.message = "訊息已改變！";
+                }
+            }
+        }).mount("#app");
+    </script>
+</body>
+</html>
