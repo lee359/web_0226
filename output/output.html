@@ -440,18 +440,15 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 </ul>
 </li>
 <li><a href="#_8">💼 專案作品</a><ul>
-<li><a href="#rag-chatbot">專案一：智慧問答系統（RAG Chatbot）</a></li>
-<li><a href="#_9">專案二：個人部落格平台</a></li>
-<li><a href="#_10">專案三：系統架構圖</a></li>
+<li><a href="#mcp-yolov8n">專案一：基於 MCP 協定與 YOLOv8n 之即時影像辨識系統實作</a></li>
 </ul>
 </li>
-<li><a href="#_11">📐 數學基礎</a></li>
-<li><a href="#_12">📅 學習計畫</a><ul>
-<li><a href="#_13">本學期目標清單</a></li>
+<li><a href="#_9">📅 學習計畫</a><ul>
+<li><a href="#_10">本學期目標清單</a></li>
 <li><a href="#2026">2026 年技術學習路線圖</a></li>
 </ul>
 </li>
-<li><a href="#_14">🌐 相關連結</a></li>
+<li><a href="#_11">🌐 相關連結</a></li>
 <li><a href="#github">📸 GitHub 統計</a></li>
 <li><a href="#ai">🤖 AI 輔助聲明</a></li>
 </ul>
@@ -483,28 +480,28 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <tbody>
 <tr>
 <td>Python</td>
-<td>⭐⭐⭐⭐⭐</td>
-<td>AI/ML、資料分析、自動化腳本</td>
+<td>⭐</td>
+<td>xxx</td>
 </tr>
 <tr>
 <td>JavaScript</td>
-<td>⭐⭐⭐⭐</td>
-<td>前端開發、Node.js 後端</td>
+<td>⭐</td>
+<td>xxx</td>
 </tr>
 <tr>
 <td>C / C++</td>
-<td>⭐⭐⭐</td>
-<td>演算法競賽、系統程式設計</td>
+<td>⭐</td>
+<td>xxx</td>
 </tr>
 <tr>
 <td>SQL</td>
-<td>⭐⭐⭐</td>
-<td>資料庫查詢與設計</td>
+<td>⭐</td>
+<td>xxx</td>
 </tr>
 <tr>
 <td>Bash</td>
-<td>⭐⭐</td>
-<td>Linux 自動化腳本</td>
+<td>⭐</td>
+<td>xxx</td>
 </tr>
 </tbody>
 </table>
@@ -556,84 +553,13 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 </ul>
 <hr />
 <h2 id="_8">💼 專案作品</h2>
-<h3 id="rag-chatbot">專案一：智慧問答系統（RAG Chatbot）</h3>
-<blockquote>
-<p>使用 <strong>LangChain</strong> 與 <strong>OpenAI API</strong> 建構的 RAG（Retrieval-Augmented Generation）問答系統，能夠根據上傳的文件回答專業問題。</p>
-</blockquote>
-<p><strong>技術棧：</strong> <code>Python</code> · <code>FastAPI</code> · <code>LangChain</code> · <code>ChromaDB</code> · <code>OpenAI API</code></p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">langchain.chains</span><span class="w"> </span><span class="kn">import</span> <span class="n">RetrievalQA</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">langchain_community.vectorstores</span><span class="w"> </span><span class="kn">import</span> <span class="n">Chroma</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">langchain_openai</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAIEmbeddings</span><span class="p">,</span> <span class="n">ChatOpenAI</span>
-
-
-<span class="k">def</span><span class="w"> </span><span class="nf">build_qa_chain</span><span class="p">(</span><span class="n">docs_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RetrievalQA</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;建立 RAG 問答鏈，支援多種文件格式。&quot;&quot;&quot;</span>
-    <span class="n">embeddings</span> <span class="o">=</span> <span class="n">OpenAIEmbeddings</span><span class="p">()</span>
-    <span class="n">vectorstore</span> <span class="o">=</span> <span class="n">Chroma</span><span class="o">.</span><span class="n">from_documents</span><span class="p">(</span>
-        <span class="n">documents</span><span class="o">=</span><span class="n">load_documents</span><span class="p">(</span><span class="n">docs_path</span><span class="p">),</span>
-        <span class="n">embedding</span><span class="o">=</span><span class="n">embeddings</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="k">return</span> <span class="n">RetrievalQA</span><span class="o">.</span><span class="n">from_chain_type</span><span class="p">(</span>
-        <span class="n">llm</span><span class="o">=</span><span class="n">ChatOpenAI</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s2">&quot;gpt-4o&quot;</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
-        <span class="n">retriever</span><span class="o">=</span><span class="n">vectorstore</span><span class="o">.</span><span class="n">as_retriever</span><span class="p">(</span><span class="n">search_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;k&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">}),</span>
-        <span class="n">return_source_documents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="p">)</span>
-</code></pre></div>
-
-<p><strong>成果亮點：</strong>
-- 支援 PDF、Markdown、網頁等多種資料來源
-- 語義搜尋準確率達 <strong>92%</strong>（以 RAGAS 評估）
-- 平均回應延遲 &lt; 2 秒</p>
-<hr />
-<h3 id="_9">專案二：個人部落格平台</h3>
-<blockquote>
-<p>以 <strong>FastAPI</strong> 為後端、<strong>React</strong> 為前端打造的全端部落格系統，支援 Markdown 撰寫與文章標籤管理。</p>
-</blockquote>
-<div class="highlight"><pre><span></span><code><span class="c1">// React 前端 — 文章卡片元件</span>
-<span class="kd">const</span><span class="w"> </span><span class="nx">ArticleCard</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">({</span><span class="w"> </span><span class="nx">title</span><span class="p">,</span><span class="w"> </span><span class="nx">summary</span><span class="p">,</span><span class="w"> </span><span class="nx">tags</span><span class="p">,</span><span class="w"> </span><span class="nx">date</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">(</span>
-<span class="w">  </span><span class="o">&lt;</span><span class="nx">div</span><span class="w"> </span><span class="nx">className</span><span class="o">=</span><span class="s2">&quot;rounded-lg shadow-md p-6 hover:shadow-xl transition-shadow&quot;</span><span class="o">&gt;</span>
-<span class="w">    </span><span class="o">&lt;</span><span class="nx">h2</span><span class="w"> </span><span class="nx">className</span><span class="o">=</span><span class="s2">&quot;text-2xl font-bold text-gray-800&quot;</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">title</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/h2&gt;</span>
-<span class="w">    </span><span class="o">&lt;</span><span class="nx">p</span><span class="w"> </span><span class="nx">className</span><span class="o">=</span><span class="s2">&quot;text-gray-500 text-sm mt-1&quot;</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">date</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
-<span class="w">    </span><span class="o">&lt;</span><span class="nx">p</span><span class="w"> </span><span class="nx">className</span><span class="o">=</span><span class="s2">&quot;mt-3 text-gray-600&quot;</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">summary</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
-<span class="w">    </span><span class="o">&lt;</span><span class="nx">div</span><span class="w"> </span><span class="nx">className</span><span class="o">=</span><span class="s2">&quot;mt-4 flex gap-2&quot;</span><span class="o">&gt;</span>
-<span class="w">      </span><span class="p">{</span><span class="nx">tags</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">tag</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">(</span>
-<span class="w">        </span><span class="o">&lt;</span><span class="nx">span</span><span class="w"> </span><span class="nx">key</span><span class="o">=</span><span class="p">{</span><span class="nx">tag</span><span class="p">}</span><span class="w"> </span><span class="nx">className</span><span class="o">=</span><span class="s2">&quot;badge badge-blue&quot;</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">tag</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/span&gt;</span>
-<span class="w">      </span><span class="p">))}</span>
-<span class="w">    </span><span class="o">&lt;</span><span class="err">/div&gt;</span>
-<span class="w">  </span><span class="o">&lt;</span><span class="err">/div&gt;</span>
-<span class="p">);</span>
+<h3 id="mcp-yolov8n">專案一：基於 MCP 協定與 YOLOv8n 之即時影像辨識系統實作</h3>
+<div class="highlight"><pre><span></span><code>
 </code></pre></div>
 
 <hr />
-<h3 id="_10">專案三：系統架構圖</h3>
-<div class="mermaid-wrap"><div class="mermaid">graph TD
-    A[👤 使用者瀏覽器] -->|HTTPS| B[Nginx 反向代理]
-    B --> C[⚡ FastAPI 後端]
-    B --> D[⚛️ React 前端]
-    C -->|ORM 查詢| E[(🐘 PostgreSQL)]
-    C -->|快取讀寫| F[(🔴 Redis)]
-    C -->|物件儲存| G[☁️ S3]
-    C -->|向量搜尋| H[(🔵 ChromaDB)]
-    style A fill:#dbeafe,stroke:#3b82f6
-    style E fill:#dcfce7,stroke:#22c55e
-    style F fill:#fee2e2,stroke:#ef4444
-    style G fill:#fef9c3,stroke:#eab308
-    style H fill:#ede9fe,stroke:#8b5cf6</div></div>
-<hr />
-<h2 id="_11">📐 數學基礎</h2>
-<p>機器學習的核心建立在數學之上，以下為常用公式：</p>
-<p><strong>交叉熵損失函數（Cross-Entropy Loss）：</strong></p>
-<p>$$L = -\frac{1}{N} \sum_{i=1}^{N} \left[ y_i \log(\hat{y}_i) + (1 - y_i)\log(1 - \hat{y}_i) \right]$$</p>
-<p><strong>梯度下降參數更新規則：</strong></p>
-<p>$$\theta_{t+1} = \theta_t - \eta \cdot \nabla_\theta \mathcal{L}(\theta_t)$$</p>
-<p>其中 $\eta$ 為學習率（learning rate），$\theta$ 為模型可學習參數。</p>
-<p><strong>Softmax 函數（多分類輸出）：</strong></p>
-<p>$$\sigma(z_i) = \frac{e^{z_i}}{\displaystyle\sum_{j=1}^{K} e^{z_j}}, \quad i = 1, 2, \ldots, K$$</p>
-<p><strong>Transformer 自注意力機制：</strong></p>
-<p>$$\text{Attention}(Q, K, V) = \text{softmax}!\left(\frac{QK^T}{\sqrt{d_k}}\right) V$$</p>
-<hr />
-<h2 id="_12">📅 學習計畫</h2>
-<h3 id="_13">本學期目標清單</h3>
+<h2 id="_9">📅 學習計畫</h2>
+<h3 id="_10">本學期目標清單</h3>
 <ul>
 <li>[x] 完成機器學習期末專題並上傳 GitHub</li>
 <li>[x] 建立個人 GitHub Portfolio 主頁</li>
@@ -655,7 +581,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
     style A fill:#bbf7d0,stroke:#16a34a
     style G fill:#bfdbfe,stroke:#2563eb</div></div>
 <hr />
-<h2 id="_14">🌐 相關連結</h2>
+<h2 id="_11">🌐 相關連結</h2>
 <table>
 <thead>
 <tr>
@@ -669,11 +595,6 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <td>GitHub</td>
 <td><a href="https://github.com/lee359">github.com/lee359</a></td>
 <td>開源專案與程式作品集</td>
-</tr>
-<tr>
-<td>個人部落格</td>
-<td><a href="https://lee359.github.io">lee359.github.io</a></td>
-<td>技術文章與心得分享</td>
 </tr>
 <tr>
 <td>Email</td>
@@ -690,7 +611,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <h2 id="ai">🤖 AI 輔助聲明</h2>
 <blockquote>
 <p>本文件部分內容（包含段落措辭、程式碼範例格式、排版結構）由 <strong>GitHub Copilot（Claude Sonnet）</strong> 輔助生成。
-履歷核心資訊（學歷、技能清單、專案描述）均為個人真實背景，創意發想與內容決策來自本人。</p>
+創意發想與內容決策來自本人。</p>
 </blockquote>
   </div>
 
