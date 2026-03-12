@@ -1,6 +1,6 @@
 # 📝 Markdown創作與渲染實作 <br>
 
->## 1. 專案簡介
+## 1. 專案簡介
 ### content.md 主題
 
 `content.md` 的主題為**個人技術履歷與作品集（Personal CV & Portfolio）**，涵蓋以下內容：
@@ -54,7 +54,7 @@
 
 ---
 
->## 2. 環境需求
+## 2. 環境需求
 
 | 項目 | 版本需求 |
 |------|---------|
@@ -68,7 +68,7 @@
 
 ---
 
->## 3. 安裝步驟
+## 3. 安裝步驟
 
 ```bash
 # 1. Clone repo（已在 GitHub Classroom 環境中完成）
@@ -90,7 +90,7 @@ pip install -r requirements.txt
 
 ---
 
->## 4. 執行渲染
+## 4. 執行渲染
 
 ```bash
 # 在 repo 根目錄執行
@@ -105,7 +105,7 @@ python render.py
 
 ---
 
->## 5. 預期輸出
+## 5. 預期輸出
 
 | 檔案路徑 | 格式 | 說明 |
 |----------|------|------|
@@ -143,7 +143,7 @@ python render.py
 
 ---
 
->## 6. 參考資料
+## 6. 參考資料
 
 **渲染核心**
 - [Python-Markdown 官方文件](https://python-markdown.github.io/)
@@ -171,9 +171,6 @@ python render.py
 
 ## 🤖 AI 輔助聲明
 
-> 本文件部分內容（包含段落措辭、程式碼範例格式、排版結構）由 **GitHub Copilot（Claude Sonnet）** 輔助生成。
-> 創意發想與內容決策來自本人。<br>
+> 本文件部分內容（包含段落措辭、程式碼範例格式、排版結構）由 **GitHub Copilot（Claude Sonnet）** 輔助生成。創意發想與內容決策來自本人。<br>
 
-### 為了客戶改了十次方案，客戶:我覺得第一個不錯，就第一個吧<br>
-![alt text](image.png)<br>
-我待客戶如初戀，客戶虐我千百遍
+
