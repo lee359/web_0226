@@ -395,22 +395,94 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
       text-align: center;
       overflow-x: auto;
       transition: box-shadow var(--t), transform var(--t);
+      position: relative;
     }
     .mermaid-wrap:hover {
       box-shadow: var(--sh-sm);
       transform: translateY(-2px);
     }
+    /* 放大提示按鈕 */
+    .mermaid-zoom-btn {
+      position: absolute;
+      top: 10px; right: 12px;
+      background: rgba(99,102,241,.12);
+      border: 1px solid rgba(99,102,241,.25);
+      border-radius: 6px;
+      padding: 4px 9px;
+      font-size: .75em;
+      color: var(--a1);
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity var(--t), background var(--t);
+      user-select: none;
+    }
+    .mermaid-wrap:hover .mermaid-zoom-btn {
+      opacity: 1;
+    }
+    .mermaid-zoom-btn:hover {
+      background: rgba(99,102,241,.25);
+    }
+    /* Lightbox overlay */
+    #mermaid-lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(13,19,38,.82);
+      backdrop-filter: blur(6px);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    #mermaid-lightbox.open {
+      display: flex;
+    }
+    #mermaid-lightbox-content {
+      background: var(--surface);
+      border-radius: var(--r);
+      padding: 36px 40px;
+      max-width: 92vw;
+      max-height: 88vh;
+      overflow: auto;
+      box-shadow: var(--sh-lg);
+      position: relative;
+      text-align: center;
+    }
+    #mermaid-lightbox-close {
+      position: absolute;
+      top: 12px; right: 16px;
+      background: none;
+      border: none;
+      font-size: 1.4em;
+      color: var(--muted);
+      cursor: pointer;
+      line-height: 1;
+      transition: color var(--t);
+    }
+    #mermaid-lightbox-close:hover { color: var(--text); }
 
     /* ── Math ──────────────────────────────────────────────────────────────── */
     .MathJax { overflow-x: auto; }
 
     /* ── Responsive breakpoints ────────────────────────────────────────────── */
+    @media (max-width: 1050px) {
+      .container { max-width: 96vw; padding: 52px 56px; }
+    }
     @media (max-width: 900px) {
       .container { padding: 44px 40px; }
+      h1 { font-size: clamp(1.6em, 5vw, 2em); }
     }
-    @media (max-width: 600px) {
-      .container { padding: 32px 20px; }
-      h2 { margin-top: 40px; }
+    @media (max-width: 680px) {
+      .container { padding: 36px 24px; }
+      h2 { margin-top: 44px; font-size: 1.2em; }
+      .highlight pre { font-size: .8em; padding: 16px 16px; }
+      .mermaid-wrap { padding: 18px 12px; }
+      th, td { padding: 9px 12px; font-size: .88em; }
+    }
+    @media (max-width: 480px) {
+      .container { padding: 28px 16px; border-radius: 10px; }
+      h2 { margin-top: 36px; }
+      code { font-size: .78em; }
     }
   </style>
 </head>
@@ -418,6 +490,14 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 
   <!-- Reading progress -->
   <div id="progress-bar" role="progressbar" aria-label="Reading progress"></div>
+
+  <!-- Mermaid Lightbox -->
+  <div id="mermaid-lightbox" role="dialog" aria-modal="true" aria-label="圖表放大檢視">
+    <div id="mermaid-lightbox-content">
+      <button id="mermaid-lightbox-close" aria-label="關閉">&#x2715;</button>
+      <div id="lb-svg-wrap"></div>
+    </div>
+  </div>
 
   <div class="container">
 <h1 id="personal-cv-portfolio">👤 個人技術履歷 · Personal CV &amp; Portfolio</h1>
@@ -542,14 +622,14 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <h2 id="_9">📅 學習計畫</h2>
 <h3 id="_10">本學期目標清單</h3>
 <ul>
-<li>[x] 完成機器學習期末專題並上傳 GitHub</li>
-<li>[x] 建立個人 GitHub Portfolio 主頁</li>
-<li>[x] 完成 HW1 Markdown 作業</li>
-<li>[ ] 學習 Docker 容器化技術</li>
-<li>[ ] 取得 AWS Cloud Practitioner 認證</li>
-<li>[ ] 在 Kaggle 競賽中取得銅牌以上名次</li>
-<li>[ ] 發表至少一篇技術部落格文章</li>
-<li>[ ] 完成畢業專題系統雛形</li>
+<li><input type="checkbox" checked disabled> 完成機器學習期末專題並上傳 GitHub</li>
+<li><input type="checkbox" checked disabled> 建立個人 GitHub Portfolio 主頁</li>
+<li><input type="checkbox" checked disabled> 完成 HW1 Markdown 作業</li>
+<li><input type="checkbox" disabled> 學習 Docker 容器化技術</li>
+<li><input type="checkbox" disabled> 取得 AWS Cloud Practitioner 認證</li>
+<li><input type="checkbox" disabled> 在 Kaggle 競賽中取得銅牌以上名次</li>
+<li><input type="checkbox" disabled> 發表至少一篇技術部落格文章</li>
+<li><input type="checkbox" disabled> 完成畢業專題系統雛形</li>
 </ul>
 <h3 id="2026">2026 年技術學習路線圖</h3>
 <div class="mermaid-wrap"><div class="mermaid">graph LR
@@ -638,8 +718,46 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
       }
     });
 
-    /* ── 4. Mermaid ─────────────────────────────────────────────────────────── */
-    mermaid.initialize({ startOnLoad: true, theme: 'neutral', securityLevel: 'loose' });
+    /* ── 4. Mermaid — 初始化（strict 模式防 XSS）───────────────────────────── */
+    mermaid.initialize({ startOnLoad: true, theme: 'neutral', securityLevel: 'strict' });
+
+    /* ── 5. Mermaid 點擊放大 Lightbox ──────────────────────────────────────── */
+    var lightbox = document.getElementById('mermaid-lightbox');
+    var lightboxContent = document.getElementById('mermaid-lightbox-content');
+    var lightboxClose = document.getElementById('mermaid-lightbox-close');
+
+    function openLightbox(svgHTML) {
+      document.getElementById('lb-svg-wrap').innerHTML = svgHTML;
+      lightbox.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeLightbox() {
+      lightbox.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    lightboxClose.addEventListener('click', closeLightbox);
+    lightbox.addEventListener('click', function(e) {
+      if (e.target === lightbox) closeLightbox();
+    });
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeLightbox();
+    });
+
+    // 等 Mermaid 渲染完成後才掛按鈕（稍作延遲）
+    setTimeout(function() {
+      document.querySelectorAll('.mermaid-wrap').forEach(function(wrap) {
+        var btn = document.createElement('button');
+        btn.className = 'mermaid-zoom-btn';
+        btn.setAttribute('aria-label', '放大圖表');
+        btn.textContent = '⤢ 放大';
+        wrap.appendChild(btn);
+        btn.addEventListener('click', function() {
+          var svg = wrap.querySelector('svg');
+          if (svg) openLightbox(svg.outerHTML);
+        });
+      });
+    }, 900);
   </script>
 </body>
 </html>

@@ -46,6 +46,14 @@ md = markdown.Markdown(
 )
 body_html = md.convert(source)
 
+# ── 3b. Post-process: render task-list checkboxes ────────────────────────────
+# 處理緊密清單：<li>[x] 文字
+body_html = re.sub(r"<li>\[x\]", '<li><input type="checkbox" checked disabled>', body_html)
+body_html = re.sub(r"<li>\[ \]", '<li><input type="checkbox" disabled>', body_html)
+# 處理寬鬆清單（項目間有空行）：<li><p>[x] 文字</p></li>
+body_html = re.sub(r"<li>\s*<p>\[x\]", '<li><p><input type="checkbox" checked disabled>', body_html)
+body_html = re.sub(r"<li>\s*<p>\[ \]", '<li><p><input type="checkbox" disabled>', body_html)
+
 # ── 4. Restore Mermaid blocks ─────────────────────────────────────────────────
 for i, diagram in enumerate(mermaid_blocks):
     body_html = body_html.replace(
@@ -373,22 +381,94 @@ html_output = f"""<!DOCTYPE html>
       text-align: center;
       overflow-x: auto;
       transition: box-shadow var(--t), transform var(--t);
+      position: relative;
     }}
     .mermaid-wrap:hover {{
       box-shadow: var(--sh-sm);
       transform: translateY(-2px);
     }}
+    /* 放大提示按鈕 */
+    .mermaid-zoom-btn {{
+      position: absolute;
+      top: 10px; right: 12px;
+      background: rgba(99,102,241,.12);
+      border: 1px solid rgba(99,102,241,.25);
+      border-radius: 6px;
+      padding: 4px 9px;
+      font-size: .75em;
+      color: var(--a1);
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity var(--t), background var(--t);
+      user-select: none;
+    }}
+    .mermaid-wrap:hover .mermaid-zoom-btn {{
+      opacity: 1;
+    }}
+    .mermaid-zoom-btn:hover {{
+      background: rgba(99,102,241,.25);
+    }}
+    /* Lightbox overlay */
+    #mermaid-lightbox {{
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(13,19,38,.82);
+      backdrop-filter: blur(6px);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }}
+    #mermaid-lightbox.open {{
+      display: flex;
+    }}
+    #mermaid-lightbox-content {{
+      background: var(--surface);
+      border-radius: var(--r);
+      padding: 36px 40px;
+      max-width: 92vw;
+      max-height: 88vh;
+      overflow: auto;
+      box-shadow: var(--sh-lg);
+      position: relative;
+      text-align: center;
+    }}
+    #mermaid-lightbox-close {{
+      position: absolute;
+      top: 12px; right: 16px;
+      background: none;
+      border: none;
+      font-size: 1.4em;
+      color: var(--muted);
+      cursor: pointer;
+      line-height: 1;
+      transition: color var(--t);
+    }}
+    #mermaid-lightbox-close:hover {{ color: var(--text); }}
 
     /* ── Math ──────────────────────────────────────────────────────────────── */
     .MathJax {{ overflow-x: auto; }}
 
     /* ── Responsive breakpoints ────────────────────────────────────────────── */
+    @media (max-width: 1050px) {{
+      .container {{ max-width: 96vw; padding: 52px 56px; }}
+    }}
     @media (max-width: 900px) {{
       .container {{ padding: 44px 40px; }}
+      h1 {{ font-size: clamp(1.6em, 5vw, 2em); }}
     }}
-    @media (max-width: 600px) {{
-      .container {{ padding: 32px 20px; }}
-      h2 {{ margin-top: 40px; }}
+    @media (max-width: 680px) {{
+      .container {{ padding: 36px 24px; }}
+      h2 {{ margin-top: 44px; font-size: 1.2em; }}
+      .highlight pre {{ font-size: .8em; padding: 16px 16px; }}
+      .mermaid-wrap {{ padding: 18px 12px; }}
+      th, td {{ padding: 9px 12px; font-size: .88em; }}
+    }}
+    @media (max-width: 480px) {{
+      .container {{ padding: 28px 16px; border-radius: 10px; }}
+      h2 {{ margin-top: 36px; }}
+      code {{ font-size: .78em; }}
     }}
   </style>
 </head>
@@ -396,6 +476,14 @@ html_output = f"""<!DOCTYPE html>
 
   <!-- Reading progress -->
   <div id="progress-bar" role="progressbar" aria-label="Reading progress"></div>
+
+  <!-- Mermaid Lightbox -->
+  <div id="mermaid-lightbox" role="dialog" aria-modal="true" aria-label="圖表放大檢視">
+    <div id="mermaid-lightbox-content">
+      <button id="mermaid-lightbox-close" aria-label="關閉">&#x2715;</button>
+      <div id="lb-svg-wrap"></div>
+    </div>
+  </div>
 
   <div class="container">
 {body_html}
@@ -443,8 +531,46 @@ html_output = f"""<!DOCTYPE html>
       }}
     }});
 
-    /* ── 4. Mermaid ─────────────────────────────────────────────────────────── */
-    mermaid.initialize({{ startOnLoad: true, theme: 'neutral', securityLevel: 'loose' }});
+    /* ── 4. Mermaid — 初始化（strict 模式防 XSS）───────────────────────────── */
+    mermaid.initialize({{ startOnLoad: true, theme: 'neutral', securityLevel: 'strict' }});
+
+    /* ── 5. Mermaid 點擊放大 Lightbox ──────────────────────────────────────── */
+    var lightbox = document.getElementById('mermaid-lightbox');
+    var lightboxContent = document.getElementById('mermaid-lightbox-content');
+    var lightboxClose = document.getElementById('mermaid-lightbox-close');
+
+    function openLightbox(svgHTML) {{
+      document.getElementById('lb-svg-wrap').innerHTML = svgHTML;
+      lightbox.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }}
+    function closeLightbox() {{
+      lightbox.classList.remove('open');
+      document.body.style.overflow = '';
+    }}
+
+    lightboxClose.addEventListener('click', closeLightbox);
+    lightbox.addEventListener('click', function(e) {{
+      if (e.target === lightbox) closeLightbox();
+    }});
+    document.addEventListener('keydown', function(e) {{
+      if (e.key === 'Escape') closeLightbox();
+    }});
+
+    // 等 Mermaid 渲染完成後才掛按鈕（稍作延遲）
+    setTimeout(function() {{
+      document.querySelectorAll('.mermaid-wrap').forEach(function(wrap) {{
+        var btn = document.createElement('button');
+        btn.className = 'mermaid-zoom-btn';
+        btn.setAttribute('aria-label', '放大圖表');
+        btn.textContent = '⤢ 放大';
+        wrap.appendChild(btn);
+        btn.addEventListener('click', function() {{
+          var svg = wrap.querySelector('svg');
+          if (svg) openLightbox(svg.outerHTML);
+        }});
+      }});
+    }}, 900);
   </script>
 </body>
 </html>
